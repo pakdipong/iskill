@@ -2,7 +2,7 @@ import Button from '../../components/ui/Button'
 
 const SectionHero = () => {
     return (
-        <section className='bg-[url("src/assets/bg-hero.jpg")] bg-cover text-neutral-950 py-10'>
+        <section className='bg-[url("/src/assets/bg-hero.jpg")] bg-cover text-neutral-950 py-10'>
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-2 place-items-center">
                     <div className='col-span-2 md:col-span-1 p-10 text-center md:text-left backdrop-blur-md bg-white/30'>

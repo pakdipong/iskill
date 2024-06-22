@@ -1,8 +1,17 @@
-import React from 'react'
+
+import { useEffect } from 'react'
+import SectionLearning from './SectionLearning'
 
 const Courses = () => {
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior:'smooth'
+  })
+  }, [])
+  
   return (
-    <div>Courses</div>
+    <SectionLearning />
   )
 }
 
