@@ -1,14 +1,17 @@
-import { useParams } from "react-router-dom"
-import { useFetchCoursesID } from "../../hooks/useFetch"
-import { useState } from "react"
 
 
-const SectionLearning = () => {
-    const { id } = useParams()
-    const courses = useFetchCoursesID(id).data
+import { CoursesDataType } from "../../hooks/useFetch"
+import { useEffect, useState } from "react"
+
+type SectionLearningProps = {
+    courses: CoursesDataType
+}
+
+const SectionLearning = ({ courses }: SectionLearningProps) => {
 
     const [lessonSelect, setLessonSelect] = useState(1)
     const [isLessonOne, setIsLessonOne] = useState(true)
+    const [isCompleted, setIsCompleted] = useState(false)
 
     const handleClick = (lesson: number) => {
         lesson == 1 ? setIsLessonOne(true) : setIsLessonOne(false)
@@ -19,6 +22,20 @@ const SectionLearning = () => {
         })
     }
 
+    const handleVideoEnded = () => {
+        localStorage.setItem(`isCompleted${courses.id}`, 'true')
+        loadLocal()
+    }
+
+    const loadLocal = () => {
+        const videoEnded = localStorage.getItem(`isCompleted${courses.id}`)
+        if (videoEnded) setIsCompleted(JSON.parse(videoEnded))
+    }
+
+    useEffect(() => {
+        loadLocal()
+    }, [])
+
     return (
         <section className='py-4 lg:py-10 bg-neutral-200'>
             <div className="container mx-auto px-4">
@@ -26,25 +43,19 @@ const SectionLearning = () => {
                     <div className="lg:col-span-2 bg-white lg:p-4">
                         <div className="w-full aspect-video">
                             {
-                                isLessonOne ? <video autoPlay controls src={`/src/assets/course${id}.mp4`} /> : <div className="flex h-full items-center justify-center text-3xl md:text-6xl font-bold bg-neutral-300">Coming Soon</div>
+                                isLessonOne ? <video autoPlay controls src={`/src/assets/course${courses.id}.mp4`} onEnded={handleVideoEnded} /> : <div className="flex h-full items-center justify-center text-3xl md:text-6xl font-bold bg-neutral-300">Coming Soon</div>
                             }
                         </div>
                     </div>
                     <div className="flex flex-col  lg:sticky lg:top-[120px]">
                         <div className='px-4 py-8 bg-white'>
-                            {
-                                courses ?
-                                    <>
-                                        <div className="flex">
-                                            <h1 className='text-2xl lg:text-3xl font-bold bg-lime-300'>{courses.name}</h1>
-                                        </div>
-                                        <p className='mt-3'>{courses.description}</p>
-                                        <div className='flex mt-3'>
-                                            <div className="border border-neutral-950 rounded-full px-3 text-sm">{courses.category}</div>
-                                        </div>
-                                    </>
-                                    : 'Loading...'
-                            }
+                            <div className="flex">
+                                <h1 className='text-2xl lg:text-3xl font-bold bg-lime-300'>{courses.name}</h1>
+                            </div>
+                            <p className='mt-3'>{courses.description}</p>
+                            <div className='flex mt-3'>
+                                <div className="border border-neutral-950 rounded-full px-3 text-sm">{courses.category}</div>
+                            </div>
                         </div>
                     </div>
                     <div className='lg:col-span-2 flex flex-col px-4 py-8  bg-white'>
@@ -54,7 +65,7 @@ const SectionLearning = () => {
                         </div>
                         <div className="flex flex-col mt-8">
                             {
-                                courses ? [1, 2, 3, 4, 5].map((lesson) => {
+                                [1, 2, 3, 4, 5].map((lesson) => {
                                     return (
                                         <div key={lesson} onClick={() => handleClick(lesson)} className={`${lessonSelect === lesson ? 'bg-neutral-950 text-white border-neutral-950' : 'border-white'} flex gap-2 items-center p-3 border-2 hover:border-neutral-950 cursor-pointer`}>
                                             <div className="flex-1 flex gap-2 items-center">
@@ -75,16 +86,20 @@ const SectionLearning = () => {
                                                 </div>
                                                 <div className="flex gap-2">
                                                     <div>{lesson}. </div>
+                                                <div className="flex flex-wrap items-center gap-2">
                                                     {
-                                                        lesson == 1 && courses ? <div>{courses.name}</div> : <div>Lesson {lesson}</div>
+                                                        lesson == 1 ? <div>{courses.name}</div> : <div>Lesson {lesson}</div>
+                                                    }
+                                                    {
+                                                        lesson == 1 && isCompleted ? <div className="text-sm text-black bg-lime-300 rounded-full px-2 ">Completed</div> : ''
                                                     }
                                                 </div>
+                                            </div>
                                             </div>
                                             <div className="flex-none">18:36</div>
                                         </div>
                                     )
                                 })
-                                    : 'Loading...'
                             }
                         </div>
                     </div>

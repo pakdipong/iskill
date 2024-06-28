@@ -46,15 +46,20 @@ export const useFetchCourses = () => {
 
 export const useFetchCoursesID = (id: string | undefined) => {
     const [data, setData] = useState<CoursesDataType | null>(null)
+    const [isError, setIsError] = useState(false)
 
     const fetchCategoriesData = async () => {
+        try {
         const result = await axios(`https://60809f81-d9e9-4fce-97ed-3d740a5add3d-00-1ne3v8vv4n7kq.sisko.replit.dev/courses/${id}`)
         setData(result.data)
     }
-
+        catch (error) {
+            setIsError(true)
+        }
+    }
     useEffect(() => {
         fetchCategoriesData()
     }, [])
 
-    return { data }
+    return { data, isError }
 }
