@@ -9,6 +9,7 @@ type SectionLearningProps = {
 
 const SectionLearning = ({ courses }: SectionLearningProps) => {
 
+    const [isLogin, setIsLogin] = useState(false)
     const [lessonSelect, setLessonSelect] = useState(1)
     const [isLessonOne, setIsLessonOne] = useState(true)
     const [isCompleted, setIsCompleted] = useState(false)
@@ -29,7 +30,10 @@ const SectionLearning = ({ courses }: SectionLearningProps) => {
 
     const loadLocal = () => {
         const videoEnded = localStorage.getItem(`isCompleted${courses.id}`)
-        if (videoEnded) setIsCompleted(JSON.parse(videoEnded))
+        const loggedIn = localStorage.getItem('isLogin')
+        
+        loggedIn == 'true'? setIsLogin(true): setIsLogin(false)
+        videoEnded == 'true'? setIsCompleted(true): setIsCompleted(false)
     }
 
     useEffect(() => {
@@ -43,7 +47,9 @@ const SectionLearning = ({ courses }: SectionLearningProps) => {
                     <div className="lg:col-span-2 bg-white lg:p-4">
                         <div className="w-full aspect-video">
                             {
-                                isLessonOne ? <video autoPlay controls src={`/src/assets/course${courses.id}.mp4`} onEnded={handleVideoEnded} /> : <div className="flex h-full items-center justify-center text-3xl md:text-6xl font-bold bg-neutral-300">Coming Soon</div>
+                                !isLogin ? <div className="flex h-full items-center justify-center text-3xl md:text-6xl font-bold bg-neutral-300">Pleses Sign In</div>
+                                    : isLessonOne ? <video autoPlay controls src={`/src/assets/course${courses.id}.mp4`} onEnded={handleVideoEnded} />
+                                        : <div className="flex h-full items-center justify-center text-3xl md:text-6xl font-bold bg-neutral-300">Coming Soon</div>
                             }
                         </div>
                     </div>
@@ -71,7 +77,7 @@ const SectionLearning = ({ courses }: SectionLearningProps) => {
                                             <div className="flex-1 flex gap-2 items-center">
                                                 <div>
                                                     {
-                                                        lesson == 1 ?
+                                                        lesson == 1 && isLogin ?
                                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="main-grid-item-icon" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
                                                                 <circle cx="12" cy="12" r="10" />
                                                                 <polygon points="10 8 16 12 10 16 10 8" />
@@ -86,15 +92,15 @@ const SectionLearning = ({ courses }: SectionLearningProps) => {
                                                 </div>
                                                 <div className="flex gap-2">
                                                     <div>{lesson}. </div>
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    {
-                                                        lesson == 1 ? <div>{courses.name}</div> : <div>Lesson {lesson}</div>
-                                                    }
-                                                    {
-                                                        lesson == 1 && isCompleted ? <div className="text-sm text-black bg-lime-300 rounded-full px-2 ">Completed</div> : ''
-                                                    }
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        {
+                                                            lesson == 1 ? <div>{courses.name}</div> : <div>Lesson {lesson}</div>
+                                                        }
+                                                        {
+                                                            lesson == 1 && isCompleted && isLogin ? <div className="text-sm text-black bg-lime-300 rounded-full px-2 ">Completed</div> : ''
+                                                        }
+                                                    </div>
                                                 </div>
-                                            </div>
                                             </div>
                                             <div className="flex-none">18:36</div>
                                         </div>
